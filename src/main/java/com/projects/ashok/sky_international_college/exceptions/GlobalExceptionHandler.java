@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> resourceNotFoundExceptionHandler(ResourceNotFoundException exception) {
         Map<String, String> details = new HashMap<>();
         details.put("resource", exception.getResourceName());
-        details.put("query", exception.getFieldName() + ": " + exception.getFieldValue());
+//        details.put("query", exception.getFieldName() + ": " + exception.getFieldValue());
 
         Map<String, Object> errorResponse = buildErrorResponse(
                 "error", "Data Not Found", exception.getMessage(), details);
