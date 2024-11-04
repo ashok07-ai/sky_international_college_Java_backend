@@ -1,6 +1,7 @@
 package com.projects.ashok.sky_international_college.configs;
 
 import com.projects.ashok.sky_international_college.services.CustomUserDetailService;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,6 +53,12 @@ public class SecurityConfig {
             logger.log(Level.SEVERE, "Error configuring SecurityFilterChain", e);
             throw new SecurityException("Failed to configure security filter chain", e);
         }
+    }
+
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Bean

@@ -10,4 +10,5 @@ public class SkyInternationalCollegeApplication {
 		SpringApplication.run(SkyInternationalCollegeApplication.class, args);
 	}
 
+
 }
