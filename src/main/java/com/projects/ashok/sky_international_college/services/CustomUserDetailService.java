@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
@@ -18,36 +19,18 @@ public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = userRepository.findByUsername(username);
-//
-//        if (user == null) {
-//            logger.error("User with username '{}' not found in the database.", username);
-//            throw new UsernameNotFoundException("User with username '" + username + "' not found.");
-//        }
-//
-//        logger.info("Successfully loaded user with username '{}'.", username);
-//        return new AuthDetails(user);
-//    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Use Optional to handle user retrieval
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> {
-                    logger.error("User with username '{}' not found in the database.", username);
-                    return new UsernameNotFoundException("User with username '" + username + "' not found.");
-                });
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
+        if (optionalUser.isEmpty()) {
+            String errorMessage = "User with this username does not exist";
+            logger.error("User with username '{}' not found in the database.", username);
+            throw new UsernameNotFoundException(errorMessage);
+        }
+
+        User user = optionalUser.get();
         logger.info("Successfully loaded user with username '{}'.", username);
         return new AuthDetails(user);
-
-        // Return the UserDetails as per your existing logic
-//        return new org.springframework.security.core.userdetails.User(
-//                user.getUsername(),
-//                user.getPassword(),
-//                user.getAuthorities()
-//        );
     }
 }
