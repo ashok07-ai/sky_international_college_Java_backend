@@ -18,16 +18,36 @@ public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User user = userRepository.findByUsername(username);
+//
+//        if (user == null) {
+//            logger.error("User with username '{}' not found in the database.", username);
+//            throw new UsernameNotFoundException("User with username '" + username + "' not found.");
+//        }
+//
+//        logger.info("Successfully loaded user with username '{}'.", username);
+//        return new AuthDetails(user);
+//    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-
-        if (user == null) {
-            logger.error("User with username '{}' not found in the database.", username);
-            throw new UsernameNotFoundException("User with username '" + username + "' not found.");
-        }
+        // Use Optional to handle user retrieval
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    logger.error("User with username '{}' not found in the database.", username);
+                    return new UsernameNotFoundException("User with username '" + username + "' not found.");
+                });
 
         logger.info("Successfully loaded user with username '{}'.", username);
         return new AuthDetails(user);
+
+        // Return the UserDetails as per your existing logic
+//        return new org.springframework.security.core.userdetails.User(
+//                user.getUsername(),
+//                user.getPassword(),
+//                user.getAuthorities()
+//        );
     }
 }

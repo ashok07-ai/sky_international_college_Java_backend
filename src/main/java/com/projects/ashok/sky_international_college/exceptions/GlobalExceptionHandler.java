@@ -1,5 +1,6 @@
 package com.projects.ashok.sky_international_college.exceptions;
 
+import com.projects.ashok.sky_international_college.utils.ErrorApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,27 +18,33 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
     /**
-     * Builds a structured error response.
+     * Builds a structured error response wrapped in an "error" object.
      *
      * @param status  the status of the error (e.g., "error")
-     * @param title   the title of the error (e.g., "Data Not Found")
-     * @param message the message describing the error
-     * @param details any additional details for the error response
+     * @param title   the title of the error (e.g., "Invalid Input")
+     * @param message the main error message or a map of detailed error messages
+     * @param details additional error details if available
      * @return a Map containing the error response structure
      */
-    private Map<String, Object> buildErrorResponse(String status, String title, String message, Map<String, ?> details) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("status", status);
-        errorResponse.put("title", title);
-        errorResponse.put("message", message);
-        errorResponse.put("timestamp", LocalDateTime.now().format(FORMATTER));
+    public Map<String, Object> buildErrorResponse(String status, String title, String message, Map<String, ?> details) {
+        Map<String, Object> errorContent = new HashMap<>();
+
+        errorContent.put("status", status);
+        errorContent.put("title", title);
+        errorContent.put("timestamp", LocalDateTime.now().format(FORMATTER));
+
+        // Wrap message as a single message or as detailed message map if provided
         if (details != null && !details.isEmpty()) {
-            errorResponse.put("details", details);
+            errorContent.put("message", details);
+        } else {
+            errorContent.put("message", Map.of("message", message));
         }
-        return errorResponse;
+
+        // Wrap everything in "error" key as requested
+        return Map.of("error", errorContent);
     }
 
     /**
@@ -50,7 +57,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> resourceNotFoundExceptionHandler(ResourceNotFoundException exception) {
         Map<String, String> details = new HashMap<>();
         details.put("resource", exception.getResourceName());
-//        details.put("query", exception.getFieldName() + ": " + exception.getFieldValue());
+        details.put("query", exception.getFieldName() + ": " + exception.getFieldValue());
 
         Map<String, Object> errorResponse = buildErrorResponse(
                 "error", "Data Not Found", exception.getMessage(), details);
@@ -92,4 +99,31 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * Handles exceptions thrown when a user already exists (e.g., when attempting to register with an already used email or username).
+     * This method intercepts the `UserAlreadyExistsException`, extracts the error details (such as the specific field and error message),
+     * and constructs a structured error response to return to the client.
+     *
+     * @param ex The `UserAlreadyExistsException` containing the details of the error (e.g., field name and error message).
+     * @return A `ResponseEntity` containing a Map with a key `"error"`, which holds an `ErrorApiResponse` object
+     *         that includes the error details, status, and timestamp, along with an HTTP status code of 409 (CONFLICT).
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Map<String, ErrorApiResponse>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        // Retrieve the error details (field name and message) from the exception
+        Map<String, String> errorDetails = ex.getErrorDetails() != null ? ex.getErrorDetails() : Map.of();
+
+        // Create the ErrorApiResponse with status "error"
+        ErrorApiResponse response = new ErrorApiResponse(errorDetails, "error");
+
+        // Wrap the ErrorApiResponse in a Map with "error" as the key
+        Map<String, ErrorApiResponse> errorResponse = Map.of("error", response);
+
+        // Return the ResponseEntity with the error response and HttpStatus.CONFLICT (409)
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+
+
 }

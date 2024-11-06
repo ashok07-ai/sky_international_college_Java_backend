@@ -1,6 +1,8 @@
 package com.projects.ashok.sky_international_college.controllers;
 
 import com.projects.ashok.sky_international_college.dtos.UserDTO;
+import com.projects.ashok.sky_international_college.dtos.UserResponseDTO;
+import com.projects.ashok.sky_international_college.exceptions.UserAlreadyExistsException;
 import com.projects.ashok.sky_international_college.services.UserService;
 import com.projects.ashok.sky_international_college.utils.ApiResponse;
 import com.projects.ashok.sky_international_college.utils.EntityHelper;
@@ -29,9 +31,14 @@ public class UserController {
 
     @PostMapping("register")
     @Operation(summary = "Register new user")
-    public ResponseEntity<ApiResponse<UserDTO>> registerUser(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<ApiResponse<UserResponseDTO>> registerUser(@Valid @RequestBody UserDTO userDTO){
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         UserDTO registeredUser = userService.registerUser(userDTO);
-        return entityHelper.buildResponse(HttpStatus.CREATED, "User registered successfully!", registeredUser);
+        // Convert to response DTO excluding password
+        UserResponseDTO registeredUserResponse = new UserResponseDTO(registeredUser);
+        return entityHelper.buildResponse(HttpStatus.CREATED, "User registered successfully!", registeredUserResponse);
     }
+
+
+
 }

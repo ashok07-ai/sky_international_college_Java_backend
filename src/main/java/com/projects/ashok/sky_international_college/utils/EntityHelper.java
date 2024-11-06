@@ -1,18 +1,24 @@
 package com.projects.ashok.sky_international_college.utils;
 
 import com.projects.ashok.sky_international_college.exceptions.ResourceNotFoundException;
+import com.projects.ashok.sky_international_college.exceptions.UserAlreadyExistsException;
+import com.projects.ashok.sky_international_college.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class EntityHelper {
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
-    public EntityHelper(ModelMapper modelMapper) {
+    public EntityHelper(ModelMapper modelMapper, UserRepository userRepository) {
         this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -54,7 +60,7 @@ public class EntityHelper {
         // Attempt to find the entity by its ID using the provided repository.
         // If the entity is not found, throw a ResourceNotFoundException with a descriptive message.
         return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(resourceName + " not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(resourceName, " not found with ID: " ,id));
     }
 
     /**
@@ -73,5 +79,44 @@ public class EntityHelper {
         return new ResponseEntity<>(response, status);
     }
 
+
+    /**
+     * Checks if a field (username, email, contact number) already exists in the database.
+     * If it does, throws a UserAlreadyExistsException with the appropriate error details.
+     *
+     * @param fieldValue the value of the field to check
+     * @param fieldName the name of the field (used for error messages)
+     * @param errorMessage the error message to be included in the exception
+     */
+    public void checkForDuplicateField(String fieldValue, String fieldName, String errorMessage) {
+        if (fieldValue == null || fieldValue.isEmpty()) {
+            return; // Skip check if the field value is null or empty (optional validation check)
+        }
+
+        boolean fieldExists = false;
+
+        // Check the database for duplicates based on the field name
+        switch (fieldName) {
+            case "username":
+                fieldExists = userRepository.findByUsername(fieldValue).isPresent();
+                break;
+            case "email":
+                fieldExists = userRepository.findByEmail(fieldValue).isPresent();
+                break;
+            case "contactNumber":
+                fieldExists = userRepository.findByContactNumber(fieldValue).isPresent();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid field name: " + fieldName);
+        }
+
+        // If the field already exists, throw the exception
+        if (fieldExists) {
+            throw new UserAlreadyExistsException(
+                    "",
+                    Map.of(fieldName, errorMessage)
+            );
+        }
+    }
 
 }

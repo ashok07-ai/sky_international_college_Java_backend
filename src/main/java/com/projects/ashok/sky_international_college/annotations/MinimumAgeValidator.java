@@ -1,6 +1,5 @@
-package com.projects.ashok.sky_international_college.utils;
+package com.projects.ashok.sky_international_college.annotations;
 
-import com.projects.ashok.sky_international_college.annotations.MinimumAge;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

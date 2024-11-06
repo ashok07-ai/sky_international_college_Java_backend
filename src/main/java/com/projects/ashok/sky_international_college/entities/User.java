@@ -3,6 +3,7 @@ package com.projects.ashok.sky_international_college.entities;
 import com.projects.ashok.sky_international_college.enums.Gender;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -34,7 +35,8 @@ public class User {
     private String contactNumber;
 
     @Column(name = "date_of_birth", nullable = false)
-    private String dateOfBirth;
+
+    private LocalDate dateOfBirth;
 
     @Column(name = "address", nullable = false)
     private String address;
@@ -95,11 +97,11 @@ public class User {
         this.contactNumber = contactNumber;
     }
 
-    public String getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

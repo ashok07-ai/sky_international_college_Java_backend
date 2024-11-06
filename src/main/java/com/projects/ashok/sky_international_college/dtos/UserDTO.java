@@ -1,4 +1,5 @@
 package com.projects.ashok.sky_international_college.dtos;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projects.ashok.sky_international_college.enums.Gender;
 import com.projects.ashok.sky_international_college.annotations.MinimumAge;
 import jakarta.validation.constraints.*;
@@ -29,7 +30,7 @@ public class UserDTO {
     @NotNull(message = "Gender is required")
     private Gender gender;
 
-    @NotBlank(message = "Phone number is required")
+    @NotBlank(message = "Contact number is required")
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
     private String contactNumber;
 

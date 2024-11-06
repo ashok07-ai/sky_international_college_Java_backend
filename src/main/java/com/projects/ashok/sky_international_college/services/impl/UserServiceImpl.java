@@ -2,16 +2,22 @@ package com.projects.ashok.sky_international_college.services.impl;
 
 import com.projects.ashok.sky_international_college.dtos.UserDTO;
 import com.projects.ashok.sky_international_college.entities.User;
+import com.projects.ashok.sky_international_college.exceptions.UserAlreadyExistsException;
 import com.projects.ashok.sky_international_college.repositories.UserRepository;
 import com.projects.ashok.sky_international_college.services.JWTService;
 import com.projects.ashok.sky_international_college.services.UserService;
 import com.projects.ashok.sky_international_college.utils.EntityHelper;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,8 +38,15 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public UserDTO registerUser(UserDTO userDTO) {
-       User userDetails = userRepository.save(entityHelper.convertToEntity(userDTO, User.class));
+        // Check for duplicates and throw exceptions if necessary
+        entityHelper.checkForDuplicateField(userDTO.getUsername(), "username", "Username already exists");
+        entityHelper.checkForDuplicateField(userDTO.getEmail(), "email", "Email already exists");
+        entityHelper.checkForDuplicateField(userDTO.getContactNumber(), "contactNumber", "Contact number already exists");
+
+        // Save the new user and return the UserDTO
+        User userDetails = userRepository.save(entityHelper.convertToEntity(userDTO, User.class));
        return entityHelper.convertToDTO(userDetails, userDTO.getClass());
     }
 
