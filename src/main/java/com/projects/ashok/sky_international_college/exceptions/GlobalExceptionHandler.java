@@ -4,12 +4,16 @@ import com.projects.ashok.sky_international_college.utils.ErrorApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -124,6 +128,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
+    /**
+     * Handle BadCredentialsException thrown during login attempt.
+     * This exception is thrown when invalid credentials are provided.
+     *
+     * @return ResponseEntity with custom error message and details.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentialsException() {
+        // Create the error message map for the invalid login credentials
+        Map<String, String> message = Map.of("message", "Invalid login credentials.");
 
+        // Create the complete error response map, including the status and timestamp
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", message);  // The error message
+        errorResponse.put("status", "error");  // The status indicating an error
+        errorResponse.put("timestamp", System.currentTimeMillis());  // The current timestamp in milliseconds
+
+        // Return the custom error response with HTTP 400 (BAD_REQUEST) status
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
 }
