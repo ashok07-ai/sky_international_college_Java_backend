@@ -1,10 +1,13 @@
-package com.projects.ashok.sky_international_college.dtos;
+package com.projects.ashok.sky_international_college.dtos.responseDTOs;
 
+import com.projects.ashok.sky_international_college.dtos.UserDTO;
 import com.projects.ashok.sky_international_college.enums.Gender;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class UserResponseDTO {
+    private UUID id;
     private String fullName;
     private String email;
     private String username;
@@ -14,6 +17,7 @@ public class UserResponseDTO {
     private LocalDate dateOfBirth;
 
     public UserResponseDTO(UserDTO userDTO) {
+        this.id = userDTO.getId();
         this.fullName = userDTO.getFullName();
         this.email = userDTO.getEmail();
         this.username = userDTO.getUsername();
@@ -21,6 +25,10 @@ public class UserResponseDTO {
         this.contactNumber = userDTO.getContactNumber();
         this.address = userDTO.getAddress();
         this.dateOfBirth = userDTO.getDateOfBirth();
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getFullName() {

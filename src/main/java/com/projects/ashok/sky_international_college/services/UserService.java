@@ -1,7 +1,8 @@
 package com.projects.ashok.sky_international_college.services;
 
 import com.projects.ashok.sky_international_college.dtos.UserDTO;
-import com.projects.ashok.sky_international_college.entities.User;
+import com.projects.ashok.sky_international_college.dtos.responseDTOs.UserResponseDTO;
+import com.projects.ashok.sky_international_college.dtos.swaggerDTOs.LoginRequestDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,10 +18,10 @@ public interface UserService {
 
     /**
      * Updates an existing user's information.
-     * @param user The updated user DTO with new information.
+     * @param userResponseDTO The updated user DTO with new information.
      * @return The updated user data after successful update.
      */
-    UserDTO updateUser(UserDTO user, Integer userId);
+    UserDTO updateUser(UserResponseDTO userResponseDTO, UUID userId);
 
     /**
      * Retrieves the details of a user based on the provided user ID.
@@ -44,8 +45,8 @@ public interface UserService {
     /**
      * Verifies the given user's credentials and generates a JWT upon successful authentication.
      *
-     * @param user the User object containing authentication details for verification.
+     * @param loginRequestDTO the User object containing authentication details for verification.
      * @return a JWT as a String if the user is successfully authenticated; otherwise, returns an error message.
      */
-    String verify(User user);
+    String verify(LoginRequestDTO loginRequestDTO);
 }

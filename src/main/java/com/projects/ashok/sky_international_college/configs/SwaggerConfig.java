@@ -25,7 +25,9 @@ public class SwaggerConfig {
                         )
                 ).tags(
                         List.of(
+                                new Tag().name("Auth Controller"),
                                 new Tag().name("User Controller")
+
                         )
                 ).addSecurityItem(
                         new SecurityRequirement().addList("bearerAuth"))

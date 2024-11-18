@@ -1,23 +1,20 @@
 package com.projects.ashok.sky_international_college.services.impl;
 
 import com.projects.ashok.sky_international_college.dtos.UserDTO;
+import com.projects.ashok.sky_international_college.dtos.responseDTOs.UserResponseDTO;
+import com.projects.ashok.sky_international_college.dtos.swaggerDTOs.LoginRequestDTO;
 import com.projects.ashok.sky_international_college.entities.User;
-import com.projects.ashok.sky_international_college.exceptions.UserAlreadyExistsException;
 import com.projects.ashok.sky_international_college.repositories.UserRepository;
 import com.projects.ashok.sky_international_college.services.JWTService;
 import com.projects.ashok.sky_international_college.services.UserService;
 import com.projects.ashok.sky_international_college.utils.EntityHelper;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO user, Integer userId) {
+    public UserDTO updateUser(UserResponseDTO userResponseDTO, UUID userId) {
         return null;
     }
 
@@ -74,10 +71,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String verify(User user) {
+    public String verify(LoginRequestDTO loginRequestDTO) {
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        return authentication.isAuthenticated() ? jwtService.generateToken(user.getUsername()) : "Failed";
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword()));
+        return authentication.isAuthenticated() ? jwtService.generateToken(loginRequestDTO.getUsername()) : "Failed";
     }
 
 }

@@ -1,13 +1,15 @@
 package com.projects.ashok.sky_international_college.dtos;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projects.ashok.sky_international_college.enums.Gender;
 import com.projects.ashok.sky_international_college.annotations.MinimumAge;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 public class UserDTO {
+
+    private UUID id;
 
     @NotBlank(message = "Full name is required!")
     @Size(max = 100, message = "Full name cannot exceed 100 characters!")
@@ -42,6 +44,14 @@ public class UserDTO {
     @Past(message = "Date of birth must be a past date")
     @MinimumAge(value = 18, message = "User must be at least 18 years old")
     private LocalDate dateOfBirth;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getFullName() {
         return fullName;
